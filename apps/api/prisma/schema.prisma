@@ -1,0 +1,460 @@
+// ============================================================
+// CRM EUROVIA — Prisma Schema
+// Banco: PostgreSQL | ORM: Prisma 5
+// Armazenamento de datas: UTC (converter no timezone da loja na query)
+// ============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// ENUMS (PostgreSQL native)
+// ============================================================
+
+enum Plaza {
+  FORTALEZA
+  SALVADOR
+}
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  VL_CONSULTANT
+  VS_SELLER
+  BDC
+}
+
+enum MediaCategory {
+  SOCIAL
+  ORGANIC
+  PAID
+  REFERRAL
+  OTHER
+}
+
+enum LeadStatusNormalized {
+  AGUARDANDO
+  ATRASADO
+  PENDENTE_DIA
+  FUTURO
+  ENCAMINHADO
+  VENDIDO
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  NO_SHOW
+}
+
+enum SyncSource {
+  SYONET_API
+  CSV_IMPORT
+  RPA
+}
+
+enum SyncStatus {
+  RUNNING
+  SUCCESS
+  FAILED
+  PARTIAL
+}
+
+// ============================================================
+// STORES — Lojas/Débitos/Concessionárias
+// ============================================================
+
+model Store {
+  id          String   @id @default(uuid())
+  shortName   String   @unique                                   // "Dunas", "Iguatemi"
+  syonetName  String   @unique                                   // "VIASUL DUNAS - CE"
+  plaza       Plaza    @map("plaza")
+  city        String                                        // "Fortaleza", "Salvador"
+  state       String   @db.VarChar(2)                          // "CE", "BA"
+  timezone    String                                        // "America/Fortaleza", "America/Bahia"
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  users              User[]
+  leads              Lead[]
+  appointments       Appointment[]
+  flowEvents         FlowEvent[]
+  sales              Sale[]
+  productivitySnapshots ProductivitySnapshot[]
+  syncMetrics        SyncMetrics[]
+
+  @@map("stores")
+}
+
+// ============================================================
+// USERS — Usuários do sistema (VL, VS, BDC, Admin, Manager)
+// ============================================================
+
+model User {
+  id         String   @id @default(uuid())
+  name       String   @db.VarChar(120)
+  username   String   @unique                                   // "MONALYSA.SILVA"
+  email      String?  @unique @db.VarChar(255)
+  password   String   @db.VarChar(255)                          // bcrypt hash
+  role       UserRole
+  storeId    String?  @map("store_id")                          // null = acesso multi-loja
+  store      Store?   @relation(fields: [storeId], references: [id])
+  syonetCode String?  @map("syonet_code")                       // código no Syonet
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  leadEvents               LeadEvent[]
+  appointmentsCreated      Appointment[]         @relation("CreatedBy")
+  salesVs                  Sale[]               @relation("SaleVs")
+  salesVl                  Sale[]               @relation("SaleVl")
+  salesBdc                 Sale[]               @relation("SaleBdc")
+  productivitySnapshots     ProductivitySnapshot[]
+  syncRuns                  SyncRun[]
+  syncMetrics               SyncMetrics[]
+
+  @@map("users")
+}
+
+// ============================================================
+// MEDIA_SOURCES — Mídias normalizadas
+// ============================================================
+
+model MediaSource {
+  id              String        @id @default(uuid())
+  rawName         String        @unique                           // "FB", "Google"
+  normalizedName  String                                       // "FACEBOOK", "GOOGLE"
+  category        MediaCategory?
+  active          Boolean       @default(true)
+  createdAt       DateTime      @default(now()) @map("created_at")
+
+  leads   Lead[]
+  sales   Sale[]
+  syncMetrics SyncMetrics[]
+
+  @@map("media_sources")
+}
+
+// ============================================================
+// LEADS — Leads recebidos do Syonet
+// Chave de dedup: syonet_lead_id + store_id (garantida via unique index)
+// ============================================================
+
+model Lead {
+  id                 String                @id @default(uuid())
+  syonetLeadId      String                @map("syonet_lead_id")
+  storeId            String                @map("store_id")
+  store              Store                 @relation(fields: [storeId], references: [id])
+  mediaSourceId     String?               @map("media_source_id")
+  mediaSource        MediaSource?          @relation(fields: [mediaSourceId], references: [id])
+  mediaRaw           String?               @map("media_raw")      // mídia original para auditoria
+  receivedAt         DateTime              @map("received_at")      // data que entrou no funil
+  integrationDate    DateTime?             @map("integration_date") // data de integração (prioridade)
+  status             String                                          // status original Syonet
+  statusNormalized   LeadStatusNormalized? @map("status_normalized")
+  priorityFlag       Boolean               @default(false) @map("priority_flag")
+  assignedVlId       String?               @map("assigned_vl_id")
+  assignedVsId       String?               @map("assigned_vs_id")
+  assignedBdcId      String?               @map("assigned_bdc_id")
+  eventType          String?               @map("event_type")
+  department         String?
+  tipoVenda          String?               @map("tipo_venda")
+  origem             String?
+  rawPayload         Json?                 @map("raw_payload")       // payload original Syonet
+  createdAt          DateTime              @default(now()) @map("created_at")
+  updatedAt          DateTime              @updatedAt @map("updated_at")
+
+  leadEvents    LeadEvent[]
+  appointments  Appointment[]
+  flowEvents    FlowEvent[]
+  sale          Sale?
+
+  @@unique([syonetLeadId, storeId])
+  @@index([receivedAt])
+  @@index([storeId])
+  @@index([mediaSourceId])
+  @@index([assignedVlId])
+  @@index([assignedVsId])
+  @@index([priorityFlag])
+  @@index([statusNormalized])
+  @@map("leads")
+}
+
+// ============================================================
+// LEAD_EVENTS — Histórico de eventos de um lead
+// ============================================================
+
+model LeadEvent {
+  id          String   @id @default(uuid())
+  leadId      String   @map("lead_id")
+  lead        Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  eventType   String   @map("event_type")  // RECEIVED | ASSIGNED | CONTACTED | APPOINTMENT | FLOW | SALE
+  eventDate   DateTime @map("event_date")
+  userId      String?  @map("user_id")
+  user        User?    @relation(fields: [userId], references: [id])
+  description String?
+  rawData     Json?    @map("raw_data")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@index([leadId])
+  @@map("lead_events")
+}
+
+// ============================================================
+// APPOINTMENTS — Agendamentos
+// ============================================================
+
+model Appointment {
+  id                 String             @id @default(uuid())
+  leadId             String             @map("lead_id")
+  lead               Lead               @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  storeId            String             @map("store_id")
+  store              Store              @relation(fields: [storeId], references: [id])
+  appointmentDate    DateTime           @map("appointment_date")
+  confirmedFlag      Boolean            @default(false) @map("confirmed_flag")
+  status             AppointmentStatus
+  createdByUserId    String?            @map("created_by_user_id")
+  createdByUser      User?              @relation("CreatedBy", fields: [createdByUserId], references: [id])
+  syonetReference    String?            @map("syonet_reference")
+  rawData            Json?              @map("raw_data")
+  createdAt          DateTime           @default(now()) @map("created_at")
+  updatedAt          DateTime           @updatedAt @map("updated_at")
+
+  @@index([appointmentDate])
+  @@index([leadId])
+  @@index([storeId])
+  @@index([status])
+  @@map("appointments")
+}
+
+// ============================================================
+// FLOW_EVENTS — Eventos de fluxo de loja
+// ============================================================
+
+model FlowEvent {
+  id               String   @id @default(uuid())
+  leadId           String   @map("lead_id")
+  lead             Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  storeId          String   @map("store_id")
+  store            Store    @relation(fields: [storeId], references: [id])
+  flowDate         DateTime @map("flow_date")
+  status           String
+  syonetReference  String?  @map("syonet_reference")
+  rawData          Json?    @map("raw_data")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  @@index([leadId])
+  @@map("flow_events")
+}
+
+// ============================================================
+// SALES — Vendas
+// ============================================================
+
+model Sale {
+  id               String    @id @default(uuid())
+  leadId           String    @unique @map("lead_id")   // um lead = uma venda (MVP)
+  lead             Lead      @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  storeId          String    @map("store_id")
+  store            Store     @relation(fields: [storeId], references: [id])
+  saleDate         DateTime  @map("sale_date")
+  tipoVenda        String    @map("tipo_venda")         // "Venda Seminovos"
+  vsUserId         String?   @map("vs_user_id")
+  vsUser           User?     @relation("SaleVs", fields: [vsUserId], references: [id])
+  vlUserId         String?   @map("vl_user_id")
+  vlUser           User?     @relation("SaleVl", fields: [vlUserId], references: [id])
+  bdcUserId        String?   @map("bdc_user_id")
+  bdcUser          User?     @relation("SaleBdc", fields: [bdcUserId], references: [id])
+  mediaSourceId    String?   @map("media_source_id")
+  mediaSource      MediaSource? @relation(fields: [mediaSourceId], references: [id])
+  amount           Decimal?  @db.Decimal(15, 2)
+  status           String    @default("CONFIRMED")
+  syonetReference  String?  @map("syonet_reference")
+  rawData          Json?     @map("raw_data")
+  createdAt        DateTime  @default(now()) @map("created_at")
+
+  @@index([saleDate])
+  @@index([leadId])
+  @@index([storeId])
+  @@index([vsUserId])
+  @@map("sales")
+}
+
+// ============================================================
+// PRODUCTIVITY_SNAPSHOTS — Snapshots de produtividade por consultor (diário/mensal)
+// ============================================================
+
+model ProductivitySnapshot {
+  id                    String    @id @default(uuid())
+  userId                String    @map("user_id")
+  user                  User      @relation(fields: [userId], references: [id])
+  storeId               String?   @map("store_id")
+  store                 Store?    @relation(fields: [storeId], references: [id])
+  periodStart           DateTime  @map("period_start")
+  periodEnd             DateTime  @map("period_end")
+  leadsXVendedorLoja    Int       @default(0) @map("leads_x_vendedor_loja")
+  leadsXOperadorBdc     Int       @default(0) @map("leads_x_operador_bdc")
+  appointmentsCount     Int       @default(0) @map("appointments_count")
+  confirmedVisits       Int       @default(0) @map("confirmed_visits")
+  salesCount            Int       @default(0) @map("sales_count")
+  averageContactMinutes Int?      @map("average_contact_minutes")
+  priorityClients       Int       @default(0) @map("priority_clients")
+  waitingCount          Int       @default(0) @map("waiting_count")
+  lateCount             Int       @default(0) @map("late_count")
+  pendingTodayCount     Int       @default(0) @map("pending_today_count")
+  futureCount           Int       @default(0) @map("future_count")
+  syncedAt              DateTime  @default(now()) @map("synced_at")
+
+  @@unique([userId, periodStart])
+  @@index([userId])
+  @@index([periodEnd])
+  @@map("productivity_snapshots")
+}
+
+// ============================================================
+// SYNC_RUNS — Log de execuções de sincronização
+// ============================================================
+
+model SyncRun {
+  id             String     @id @default(uuid())
+  source         SyncSource
+  startedAt      DateTime   @map("started_at")
+  finishedAt     DateTime?  @map("finished_at")
+  status         SyncStatus
+  rowsRead       Int?       @map("rows_read")
+  rowsInserted   Int?       @map("rows_inserted")
+  rowsUpdated    Int?       @map("rows_updated")
+  rowsSkipped    Int?       @map("rows_skipped")
+  errorMessage   String?    @map("error_message")
+  triggeredBy    String?    @map("triggered_by")
+  triggeredByUser User?     @relation(fields: [triggeredBy], references: [id])
+  createdAt      DateTime   @default(now()) @map("created_at")
+
+  @@index([startedAt])
+  @@index([status])
+  @@map("sync_runs")
+}
+
+// ============================================================
+// REFRESH_TOKENS — JWT refresh tokens
+// ============================================================
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String   @map("user_id")
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@index([token])
+  @@map("refresh_tokens")
+}
+
+// ============================================================
+// SYNC_METRICS — Métricas agregadas para dashboard rápido
+// Usado pela sincronização Syonet (carga incremental a cada 15 min)
+// ============================================================
+
+model SyncMetrics {
+  id                    String    @id @default(uuid())
+  extractionDate        DateTime  @map("extraction_date") @db.Date
+  storeId               String    @map("store_id")
+  store                 Store     @relation(fields: [storeId], references: [id])
+  mediaId               String?   @map("media_source_id")
+  mediaSource           MediaSource? @relation(fields: [mediaId], references: [id])
+  vlUserId              String?   @map("vl_user_id")
+  vlUser                User?     @relation(fields: [vlUserId], references: [id])
+
+  // Métricas de Leads
+  leadsTotal            Int       @default(0) @map("leads_total")
+  leadsToVs             Int       @default(0) @map("leads_to_vs")
+  leadsToBdc            Int       @default(0) @map("leads_to_bdc")
+
+  // Métricas de Agendamento
+  appointmentsTotal     Int       @default(0) @map("appointments_total")
+  appointmentsConfirmed Int       @default(0) @map("appointments_confirmed")
+
+  // Métricas de Fluxo
+  flowTotal             Int       @default(0) @map("flow_total")
+
+  // Métricas de Venda
+  salesTotal            Int       @default(0) @map("sales_total")
+
+  // Metadados de sync
+  syncBatchId           String?   @map("sync_batch_id")
+  createdAt             DateTime  @default(now()) @map("created_at")
+
+  @@unique([extractionDate, storeId, vlUserId])
+  @@index([extractionDate])
+  @@index([storeId])
+  @@index([vlUserId])
+  @@map("sync_metrics")
+}
+
+// ============================================================
+// DASHBOARD_USERS — Usuários do dashboard analítico (avaliador)
+// Separação de credenciais do sistema operacional
+// ============================================================
+
+model DashboardUser {
+  id           String   @id @default(uuid())
+  username     String   @unique
+  passwordHash String   @map("password_hash")
+  name         String
+  role         String   @default("VIEWER") // VIEWER | ADMIN
+  active       Boolean  @default(true)
+  allowedStores String[] @default([]) @map("allowed_stores") // storeIds que o usuário pode ver
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  validations  ValidationReport[]
+
+  @@map("dashboard_users")
+}
+
+// ============================================================
+// VALIDATION_REPORTS — Registros de validação do cliente
+// ============================================================
+
+enum ValidationStatus {
+  CORRETO
+  INCORRETO
+}
+
+enum ValidationItemType {
+  LEAD
+  SALE
+  APPOINTMENT
+  STORE
+  VL_CONSULTANT
+  MEDIA
+  OVERALL
+}
+
+model ValidationReport {
+  id              String             @id @default(uuid())
+  itemType        ValidationItemType @map("item_type")
+  itemId          String?            @map("item_id")
+  status          ValidationStatus
+  feedback        String?
+  dashboardUserId String             @map("dashboard_user_id")
+  dashboardUser   DashboardUser      @relation(fields: [dashboardUserId], references: [id])
+  periodStart     DateTime?         @map("period_start")
+  periodEnd       DateTime?         @map("period_end")
+  createdAt       DateTime          @default(now()) @map("created_at")
+
+  @@unique([itemType, itemId, dashboardUserId, periodStart, periodEnd])
+  @@index([itemType])
+  @@index([dashboardUserId])
+  @@map("validation_reports")
+}

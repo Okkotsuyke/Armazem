@@ -1,0 +1,479 @@
+[
+  {
+    "id": 7,
+    "nome": "EUROVIA VEICULOS S/A",
+    "apelido": "EUROVIA PIEDADE - PE",
+    "marca": "RENAULT",
+    "dominio": "VIASUL",
+    "cidade": "Jaboatao dos Guararapes",
+    "estado": "PE"
+  },
+  {
+    "id": 8,
+    "nome": "EUROVIA VEICULOS S/A",
+    "apelido": "EUROVIA AFOGADOS - PE",
+    "marca": "RENAULT",
+    "dominio": "VIASUL",
+    "cidade": "RECIFE",
+    "estado": "PE"
+  },
+  {
+    "id": 9,
+    "nome": "Intervia Ve�culos Ltda",
+    "apelido": "KIA INTERVIA IMBIRIBEIRA - PE",
+    "marca": "KIA MOTORS",
+    "dominio": "VIASUL",
+    "cidade": "Recife",
+    "estado": "PE"
+  },
+  {
+    "id": 12,
+    "nome": "Eurovia Ve�culos S/A",
+    "apelido": "EUROVIA IGUATEMI - BA",
+    "marca": "RENAULT",
+    "dominio": "VIASUL",
+    "cidade": "SALVADOR",
+    "estado": "BA"
+  },
+  {
+    "id": 13,
+    "nome": "Eurovia Autom�veis e Utilit�rios S/A",
+    "apelido": "NISSAN AFOGADOS - PE",
+    "marca": "NISSAN",
+    "dominio": "VIASUL",
+    "cidade": "Recife",
+    "estado": "PE"
+  },
+  {
+    "id": 14,
+    "nome": "EUROVIA AUTOM�VEIS E UTILIT�RIOS S/A",
+    "apelido": "NISSAN IGUATEMI - BA",
+    "marca": "NISSAN",
+    "dominio": "VIASUL",
+    "cidade": "SALVADOR",
+    "estado": "BA"
+  },
+  {
+    "id": 15,
+    "nome": "EUROVIA AUTOM�VEIS E UTILIT�RIOS S/A",
+    "apelido": "NISSAN IMBIRIBEIRA - PE",
+    "marca": "NISSAN",
+    "dominio": "VIASUL",
+    "cidade": "RECIFE",
+    "estado": "PE"
+  },
+  {
+    "id": 22,
+    "nome": "EUROVIA AUTOMOVEIS E UTILITARIOS S/A",
+    "apelido": "NISSAN LAURO - BA",
+    "marca": "NISSAN",
+    "dominio": "VIASUL",
+    "cidade": "LAURO DE FREITAS",
+    "estado": "BA"
+  },
+  {
+    "id": 23,
+    "nome": "EUROVIA VEICULOS S/A",
+    "apelido": "EUROVIA LAURO - BA",
+    "marca": "RENAULT",
+    "dominio": "VIASUL",
+    "cidade": "LAURO DE FREITAS",
+    "estado": "BA"
+  },
+  {
+    "id": 29,
+    "nome": "Via Sul Veiculos S/A",
+    "apelido": "JEEP RIO VERMELHO - BA",
+    "marca": "JEEP",
+    "dominio": "VIASUL",
+    "cidade": "SALVADOR",
+    "estado": "BA"
+  },
+  {
+    "id": 62,
+    "nome": "JEEP IMBIRIBEIRA",
+    "apelido": "JEEP IMBIRIBEIRA - PE",
+    "marca": "JEEP",
+    "dominio": "VIASUL",
+    "cidade": "Recife",
+    "estado": "PE"
+  },
+  {
+    "id": 63,
+    "nome": "JEEP DUNAS",
+    "apelido": "JEEP DUNAS - CE",
+    "marca": "JEEP",
+    "dominio": "VIASUL",
+    "cidade": "Fortaleza",
+    "estado": "CE"
+  },
+  {
+    "id": 71,
+    "nome": "Via Sul Veiculos S/A",
+    "apelido": "VIASUL PIEDADE - PE",
+    "marca": "FIAT",
+    "dominio": "VIASUL",
+    "cidade": "JABOATAO DOS GUARARAPES",
+    "estado": "PE"
+  },
+  {
+    "id": 72,
+    "nome": "Via Sul Ve�culos S/A",
+    "apelido": "VIASUL ARRUDA - PE",
+    "marca": "FIAT",
+    "dominio": "VIASUL",
+    "cidade": "RECIFE",
+    "estado": "PE"
+  },
+  {
+    "id": 73,
+    "nome": "Granvia Ve�culos Ltda",
+    "apelido": "GRANVIA IMBIRIBEIRA - PE",
+    "marca": "FORD",
+    "dominio": "VIASUL",
+    "cidade": "RECIFE",
+    "estado": "PE"
+  },
+  {
+    "id": 75,
+    "nome": "Via Sul Ve�culos S/A",
+    "apelido": "VIASUL DUNAS - CE",
+    "marca": "FIAT",
+    "dominio": "VIASUL",
+    "cidade": "FORTALEZA",
+    "estado": "CE"
+  },
+  {
+    "id": 76,
+    "nome": "Eurovia Ve�culos S/A",
+    "apelido": "EUROVIA IMBIRIBEIRA - PE",
+    "marca": "RENAULT",
+    "dominio": "VIASUL",
+    "cidade": "IMBIRIBEIRA",
+    "estado": "PE"
+  },
+  {
+    "id": 77,
+    "nome": "EUROVIA AUTOM�VEIS E UTILIT�RIOS S/A",
+    "apelido": "NISSAN PARALELA - BA",
+    "marca": "NISSAN",
+    "dominio": "VIASUL",
+    "cidade": "SALVADOR",
+    "estado": "BA"
+  },
+  {
+    "id": 79,
+    "nome": "JEEP ACM",
+    "apelido": "JEEP ACM - BA",
+    "marca": "JEEP",
+    "dominio": "VIASUL",
+    "cidade": "Salvador",
+    "estado": "BA"
+  },
+  {
+    "id": 80,
+    "nome": "NISSAN CAXANGA - PE",
+    "apelido": "NISSAN CAXANGA - PE",
+    "marca": "NISSAN",
+    "dominio": "VIASUL",
+    "cidade": "RECIFE",
+    "estado": "PE"
+  },
+  {
+    "id": 81,
+    "nome": "VIA SUL VEICULOS S/A",
+    "apelido": "JEEP PIEDADE - PE",
+    "marca": "JEEP",
+    "dominio": "VIASUL",
+    "cidade": "JABOATAO DOS GUARARAPES",
+    "estado": "PE"
+  },
+  {
+    "id": 82,
+    "nome": "EUROVIA AUTOMOVEIS E UTILITARIOS S/A",
+    "apelido": "NISSAN PIEDADE - PE",
+    "marca": "NISSAN",
+    "dominio": "VIASUL",
+    "cidade": "JABOAT�O DOS GUARARAPES",
+    "estado": "PE"
+  },
+  {
+    "id": 83,
+    "nome": "EUROVIA VEICULOS S/A",
+    "apelido": "EUROVIA OLINDA - PE",
+    "marca": "RENAULT",
+    "dominio": "VIASUL",
+    "cidade": "Olinda",
+    "estado": "PE"
+  },
+  {
+    "id": 85,
+    "nome": "EUROVIA PRADO - PE",
+    "apelido": "EUROVIA PRADO - PE",
+    "marca": "MULTIMARCAS",
+    "dominio": "VIASUL",
+    "cidade": "Recife",
+    "estado": "PE"
+  },
+  {
+    "id": 86,
+    "nome": "VIA 1 BONOCO - BA",
+    "apelido": "VIA 1 BONOCO - BA",
+    "marca": "MULTIMARCAS",
+    "dominio": "VIASUL",
+    "cidade": "Salvador",
+    "estado": "BA"
+  },
+  {
+    "id": 87,
+    "nome": "VIA1 SEMINOVOS IMBIRIBEIRA",
+    "apelido": "VIA1 SEMINOVOS IMBIRIBEIRA",
+    "marca": "MULTIMARCAS",
+    "dominio": "VIASUL",
+    "cidade": "Recife",
+    "estado": "PE"
+  },
+  {
+    "id": 88,
+    "nome": "NEWVIA BONOCO - BA",
+    "apelido": "NEWVIA BONOCO - BA",
+    "marca": "BAJAJ",
+    "dominio": "VIASUL",
+    "cidade": "SALVADOR",
+    "estado": "BA"
+  },
+  {
+    "id": 89,
+    "nome": "GRANVIA CARUARU - PE",
+    "apelido": "GRANVIA CARUARU - PE",
+    "marca": "FORD",
+    "dominio": "VIASUL",
+    "cidade": "Caruaru",
+    "estado": "PE"
+  },
+  {
+    "id": 90,
+    "nome": "VIA SUL VEICULOS S/A",
+    "apelido": "VIA1 AV. NORTE - PE",
+    "marca": "SEMINOVOS",
+    "dominio": "VIASUL",
+    "cidade": "Recife",
+    "estado": "PE"
+  },
+  {
+    "id": 91,
+    "nome": "BYD ARRUDA - PE",
+    "apelido": "BYD ARRUDA - PE",
+    "marca": "BYD",
+    "dominio": "VIASUL",
+    "cidade": "Recife",
+    "estado": "PE"
+  },
+  {
+    "id": 92,
+    "nome": "BYD CAMINHO DAS ARVORES - BA",
+    "apelido": "BYD CAMINHO DAS ARVORES - BA",
+    "marca": "BYD",
+    "dominio": "VIASUL",
+    "cidade": "Salvador",
+    "estado": "BA"
+  },
+  {
+    "id": 93,
+    "nome": "NEWVIA CARUARU - PE",
+    "apelido": "NEWVIA CARUARU - PE",
+    "marca": "BAJAJ",
+    "dominio": "VIASUL",
+    "cidade": "Caruaru",
+    "estado": "PE"
+  },
+  {
+    "id": 94,
+    "nome": "NEWVIA IMBIRIBEIRA - PE",
+    "apelido": "NEWVIA IMBIRIBEIRA - PE",
+    "marca": "BAJAJ",
+    "dominio": "VIASUL",
+    "cidade": "Recife",
+    "estado": "PE"
+  },
+  {
+    "id": 95,
+    "nome": "JEEP PARQUEL�NDIA - CE",
+    "apelido": "JEEP PARQUEL�NDIA - CE",
+    "marca": "JEEP",
+    "dominio": "VIASUL",
+    "cidade": "Fortaleza",
+    "estado": "CE"
+  },
+  {
+    "id": 96,
+    "nome": "NEWVIA PARQUEL�NDIA - CE",
+    "apelido": "NEWVIA PARQUEL�NDIA - CE",
+    "marca": "BAJAJ",
+    "dominio": "VIASUL",
+    "cidade": "Fortaleza",
+    "estado": "CE"
+  },
+  {
+    "id": 99,
+    "nome": "EUROVIA EPIT�CIO PESSOA - PB",
+    "apelido": "EUROVIA EPIT�CIO PESSOA - PB",
+    "marca": "RENAULT",
+    "dominio": "VIASUL",
+    "cidade": "Jo�o Pessoa",
+    "estado": "PB"
+  },
+  {
+    "id": 100,
+    "nome": "EUROVIA CABEDELO - PB",
+    "apelido": "EUROVIA CABEDELO - PB",
+    "marca": "RENAULT",
+    "dominio": "VIASUL",
+    "cidade": "Jo�o Pessoa",
+    "estado": "PB"
+  },
+  {
+    "id": 101,
+    "nome": "**INATIVA** NEWVIA FEIRA DE SANTANA - BA",
+    "apelido": "**INATIVA** NEWVIA FEIRA DE SANTANA - BA - INATIVA",
+    "marca": "BAJAJ",
+    "dominio": "VIASUL",
+    "cidade": "Feira de Santana",
+    "estado": "BA"
+  },
+  {
+    "id": 102,
+    "nome": "BYD WASHINGTON SOARES - CE",
+    "apelido": "BYD WASHINGTON SOARES - CE",
+    "marca": "BYD",
+    "dominio": "VIASUL",
+    "cidade": "FORTALEZA",
+    "estado": "CE"
+  },
+  {
+    "id": 103,
+    "nome": "OMODA | JAECOO FORTALEZA - CE",
+    "apelido": "OMODA | JAECOO FORTALEZA - CE",
+    "marca": "OMODA - JAECOO",
+    "dominio": "VIASUL",
+    "cidade": "Fortaleza",
+    "estado": "CE"
+  },
+  {
+    "id": 104,
+    "nome": "OMODA | JAECOO ABDIAS - PE",
+    "apelido": "OMODA | JAECOO ABDIAS - PE",
+    "marca": "OMODA - JAECOO",
+    "dominio": "VIASUL",
+    "cidade": "Salvador",
+    "estado": "BA"
+  },
+  {
+    "id": 105,
+    "nome": "OMODA | JAECOO PARALELA - BA",
+    "apelido": "OMODA | JAECOO PARALELA - BA",
+    "marca": "OMODA - JAECOO",
+    "dominio": "VIASUL",
+    "cidade": "Salvador",
+    "estado": "BA"
+  },
+  {
+    "id": 106,
+    "nome": "EUROVIA VEICULOS",
+    "apelido": "EUROVIA ANTONIO GAMA - PB",
+    "marca": "RENAULT",
+    "dominio": "VIASUL",
+    "cidade": "Jo�o Pessoa",
+    "estado": "PB"
+  },
+  {
+    "id": 107,
+    "nome": "NISSAN RIO VERMELHO - BA",
+    "apelido": "NISSAN RIO VERMELHO - BA",
+    "marca": "NISSAN",
+    "dominio": "VIASUL",
+    "cidade": "Salvador",
+    "estado": "BA"
+  },
+  {
+    "id": 108,
+    "nome": "EUROVIA GEELY IMBIRIBEIRA - PE",
+    "apelido": "EUROVIA GEELY IMBIRIBEIRA - PE",
+    "marca": "GEELY",
+    "dominio": "VIASUL",
+    "cidade": "Recife",
+    "estado": "PE"
+  },
+  {
+    "id": 109,
+    "nome": "EUROVIA GEELY EPIT�CIO PESSOA - PB",
+    "apelido": "EUROVIA GEELY EPIT�CIO PESSOA - PB",
+    "marca": "GEELY",
+    "dominio": "VIASUL",
+    "cidade": "Jo�o Pessoa",
+    "estado": "PB"
+  },
+  {
+    "id": 110,
+    "nome": "EUROVIA GEELY IGUATEMI - BA",
+    "apelido": "EUROVIA GEELY IGUATEMI - BA",
+    "marca": "GEELY",
+    "dominio": "VIASUL",
+    "cidade": "Salvador",
+    "estado": "BA"
+  },
+  {
+    "id": 111,
+    "nome": "EUROVIA GEELY ACM - BA",
+    "apelido": "EUROVIA GEELY ACM - BA",
+    "marca": "GEELY",
+    "dominio": "VIASUL",
+    "cidade": "Salvador",
+    "estado": "BA"
+  },
+  {
+    "id": 112,
+    "nome": "NEWVIA WASHINGTON SOARES - CE",
+    "apelido": "NEWVIA WASHINGTON SOARES - CE",
+    "marca": "BAJAJ",
+    "dominio": "VIASUL",
+    "cidade": "Fortaleza",
+    "estado": "CE"
+  },
+  {
+    "id": 113,
+    "nome": "LEAP IMBIRIBEIRA - PE",
+    "apelido": "VIA SUL LEAP IMBIRIBEIRA - PE",
+    "marca": "LEAPMOTOR",
+    "dominio": "VIASUL",
+    "cidade": "Recife",
+    "estado": "PE"
+  },
+  {
+    "id": 114,
+    "nome": "NEWVIA LAURO DE FREITAS - BA",
+    "apelido": "NEWVIA LAURO DE FREITAS - BA",
+    "marca": "BAJAJ",
+    "dominio": "VIASUL",
+    "cidade": "Lauro de Freitas",
+    "estado": "BA"
+  },
+  {
+    "id": 115,
+    "nome": "NEWVIA PIEDADE - PE",
+    "apelido": "NEWVIA PIEDADE - PE",
+    "marca": "BAJAJ",
+    "dominio": "VIASUL",
+    "cidade": "Jaboat�o dos Guararapes",
+    "estado": "PE"
+  },
+  {
+    "id": 116,
+    "nome": "EUROVIA GEELY MADALENA - PE",
+    "apelido": "EUROVIA GEELY MADALENA - PE",
+    "marca": "GEELY",
+    "dominio": "VIASUL",
+    "cidade": "Recife",
+    "estado": "PE"
+  }
+]

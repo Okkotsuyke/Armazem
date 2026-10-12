@@ -1,0 +1,32 @@
+name: 📝 Documentation
+description: Melhorar documentação
+title: "[DOCS] "
+labels: ["documentation"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## O que precisa ser documentado?
+
+  - type: textarea
+    id: current
+    attributes:
+      label: Estado atual
+      placeholder: O que existe hoje?
+
+  - type: textarea
+    id: needed
+    attributes:
+      label: O que precisa ser adicionado/melhorado
+      placeholder: Detalhe o que falta
+
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Contexto adicional
+      placeholder: Qualquer informação útil

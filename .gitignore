@@ -1,0 +1,60 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+.next/
+dist/
+build/
+out/
+
+# Production builds
+.turbo/
+apps/*/.turbo/
+
+# Environment files (usar .env.example)
+.env
+.env.local
+.env.*.local
+*.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# Prisma
+*.db
+*.db-journal
+prisma/*.db
+
+# Debug
+debug/
+*.debug
+
+# Playwright
+test-results/
+playwright-report/
+playwright/.cache/
+
+# Docker
+.docker/
+
+# Misc
+*.pem
+*.key
+.vercel
+.turbo
+
+# Ignore Supabase config in repo (manter apenas .env.example)
+apps/api/supabase/
