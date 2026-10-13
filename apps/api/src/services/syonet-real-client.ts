@@ -827,7 +827,7 @@ export async function extractLeadsData(
         empresaIds = empresas
           .filter((e) => e.ativo)
           .map((e) => e.idEmpresa)
-          .filter(Boolean);
+          .filter((id): id is number => id !== undefined);
         console.log(`   Empresas ativas: ${empresaIds.length}`);
       }
     } catch (err) {
@@ -836,7 +836,7 @@ export async function extractLeadsData(
 
     // Se não temos empresas, usar mapeamento fixo
     if (empresaIds.length === 0) {
-      empresaIds = Object.values(STORE_MAPPING).map((v) => v.syonetId);
+      empresaIds = Object.values(STORE_MAPPING).map((v) => v.syonetId).filter((id): id is number => id !== undefined);
       console.log(`   Usando mapeamento fixo: ${empresaIds.length} empresas`);
     }
 

@@ -12,6 +12,12 @@ declare module 'fastify' {
 }
 
 async function prismaPluginInner(fastify: FastifyInstance) {
+  // Em testes, pular conexão real — os mocks do vitest fornecem stubs
+  if (process.env.NODE_ENV === 'test') {
+    fastify.log.info('Prisma plugin skipped (test mode)');
+    return;
+  }
+
   // Configurar URL do banco - usar E3_POSTGRES_URL se DATABASE_URL não estiver disponível
   const databaseUrl = process.env.DATABASE_URL || process.env.E3_POSTGRES_URL;
 

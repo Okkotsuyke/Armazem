@@ -58,6 +58,10 @@ async function syncCallback(): Promise<void> {
  * Inicia o scheduler de sincronização
  */
 export function startSyncScheduler(): void {
+  if (process.env.VERCEL === '1') {
+    console.log('ℹ️ Scheduler desabilitado em Vercel — usando Vercel Cron');
+    return;
+  }
   if (schedulerInterval) {
     console.log('⚠️  Scheduler já está ativo');
     return;

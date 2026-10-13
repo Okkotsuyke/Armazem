@@ -1,18 +1,12 @@
 {
   "version": 2,
-  "buildCommand": "npm run prisma:generate && npm run build",
-  "installCommand": "npm install",
+  "buildCommand": "pnpm turbo build --filter=@crm/api",
+  "installCommand": "pnpm install",
   "framework": null,
-  "regions": ["gru1"],
   "outputDirectory": "dist",
-  "routes": [
-    {
-      "src": "/health",
-      "dest": "/api/index.js"
-    },
-    {
-      "src": "/api/(.*)",
-      "dest": "/api/index.js"
-    }
-  ]
+  "functions": {
+    "api/index.ts": { "runtime": "nodejs24.x", "maxDuration": 300 }
+  },
+  "regions": ["gru1"],
+  "crons": [{ "path": "/api/cron/sync", "schedule": "*/15 * * * *" }]
 }

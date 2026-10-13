@@ -15,8 +15,10 @@ async function start() {
     console.log(`📚 Health: http://localhost:${PORT}/health`);
     console.log(`🔐 Auth:  http://localhost:${PORT}/api/v1/auth/login`);
 
-    // Iniciar scheduler de sincronização
-    startSyncScheduler();
+    // Iniciar scheduler de sincronização (desabilitado em Vercel — usa Cron)
+    if (!process.env.VERCEL) {
+      startSyncScheduler();
+    }
 
     console.log(`\n📊 Endpoints de Analytics:`);
     console.log(`   GET /api/v1/analytics/overview`);

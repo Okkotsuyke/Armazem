@@ -241,7 +241,7 @@ export async function extractFunilData(
     log('info', 'Extraindo dados do Funil (Dashboard 189)...');
 
     // Buscar Dashboard 189
-    const dashboardData = await page.evaluate(async (args) => {
+    const dashboardData: { empresas?: Array<{ id?: number; nome?: string; apelido?: string; incluidos?: number; leads?: number; porMidia?: Record<string,number>; agendamentos?: number; confirmados?: number; comparecidos?: number; vendas?: number }> } | null = await page.evaluate(async (args) => {
       const res = await fetch(args.baseUrl + '/api/dashboard/189', {
         headers: {
           'Cookie': args.cookie,
@@ -258,7 +258,7 @@ export async function extractFunilData(
       if (dashboardData.empresas && Array.isArray(dashboardData.empresas)) {
         for (const empresa of dashboardData.empresas) {
           // Verificar se empresa está nos filtros
-          if (filters?.empresaIds && !filters.empresaIds.includes(empresa.id)) {
+          if (filters?.empresaIds && empresa.id !== undefined && !filters.empresaIds.includes(empresa.id)) {
             continue;
           }
 
