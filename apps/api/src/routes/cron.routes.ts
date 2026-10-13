@@ -61,11 +61,9 @@ export async function cronRoutes(fastify: FastifyInstance) {
 
       const duration = Date.now() - startTime;
 
-      fastify.log.info({
-        totalRowsProcessed: result.totalRowsProcessed,
-        errors: result.totalErrors,
-        duration: `${duration}ms`
-      }, 'Cron sync finalizado');
+      fastify.log.info(
+        `Cron sync finalizado - totalRowsProcessed: ${result.totalRowsProcessed}, errors: ${result.totalErrors}, duration: ${duration}ms`
+      );
 
       return {
         success: result.totalErrors === 0,
