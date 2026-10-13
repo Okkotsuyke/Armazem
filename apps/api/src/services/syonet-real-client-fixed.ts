@@ -50,7 +50,7 @@ let browserInstance: Browser | null = null;
 let contextInstance: BrowserContext | null = null;
 let pageInstance: Page | null = null;
 let isLoggedIn = false;
-let lastLoginTime = number = 0;
+let lastLoginTime = 0;
 
 function log(level: 'info' | 'success' | 'error' | 'warn', message: string, ...args: any[]) {
   const prefix = { info: '🔵', success: '✅', error: '❌', warn: '⚠️' }[level];

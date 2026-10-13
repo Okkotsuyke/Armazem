@@ -21,6 +21,8 @@
     "node": ">=20.0.0"
   },
   "dependencies": {
+    "@sentry/node": "^11.7.0",
+    "@sentry/tracing": "^7.120.4",
     "playwright": "^1.64.0"
   }
 }

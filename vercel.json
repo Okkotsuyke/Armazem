@@ -1,13 +1,13 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "pnpm turbo build --filter=@crm/web",
+  "installCommand": "pnpm install",
   "framework": null,
   "outputDirectory": "apps/web/.next",
   "regions": ["gru1"],
   "env": {
     "NEXT_PUBLIC_APP_URL": "https://crm-eurovia.com"
   },
-  "regions": ["gru1"],
   "headers": [
     {
       "source": "/(.*)",
@@ -22,9 +22,11 @@
     {
       "source": "/api/(.*)",
       "headers": [
-        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Origin", "value": "https://crm-eurovia.com" },
         { "key": "Access-Control-Allow-Methods", "value": "GET, POST, PUT, DELETE, OPTIONS" },
-        { "key": "Access-Control-Allow-Headers", "value": "Content-Type, Authorization" }
+        { "key": "Access-Control-Allow-Headers", "value": "Content-Type, Authorization" },
+        { "key": "Access-Control-Allow-Credentials", "value": "true" },
+        { "key": "Access-Control-Max-Age", "value": "86400" }
       ]
     }
   ],

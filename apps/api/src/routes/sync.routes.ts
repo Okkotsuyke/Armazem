@@ -2,9 +2,14 @@
  * Sync routes — importação CSV e status de sincronização
  */
 import { FastifyPluginAsync } from 'fastify';
-import { parse as csvParse } from 'csv-parse/sync';
 import { SyncSource, SyncStatus, LeadStatusNormalized } from '@prisma/client';
 import { authenticate, requireRoles } from '../middleware/auth.middleware';
+
+// Dynamic import para csv-parse que funciona tanto em dev quanto em produção
+async function getCsvParser() {
+  const mod = await import('csv-parse/sync');
+  return mod.parse;
+}
 
 export const syncRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.addHook('onRequest', authenticate);
@@ -46,6 +51,7 @@ export const syncRoutes: FastifyPluginAsync = async (fastify) => {
       const content = await file.toBuffer();
       let rows: Record<string, string>[];
       try {
+        const csvParse = await getCsvParser();
         rows = csvParse(content.toString('utf-8'), {
           columns: true,
           skip_empty_lines: true,

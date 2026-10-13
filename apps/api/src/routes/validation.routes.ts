@@ -11,14 +11,40 @@ import { extractLeadsData, extractProductivityData, syonetLogin, syonetLogout, S
 
 const prisma = new PrismaClient();
 
-// Configuração do Syonet
+// ============================================================
+// ⚠️  ATENÇÃO: Configurações de produção - NUNCA commitar credenciais!
+// ============================================================
+
+// Validação rigorosa de variáveis de ambiente obrigatórias
+const SYONET_URL = process.env.SYONET_URL;
+const SYONET_USERNAME = process.env.SYONET_USERNAME;
+const SYONET_PASSWORD = process.env.SYONET_PASSWORD;
+
+if (!SYONET_URL || !SYONET_USERNAME || !SYONET_PASSWORD) {
+  const missing = [];
+  if (!SYONET_URL) missing.push('SYONET_URL');
+  if (!SYONET_USERNAME) missing.push('SYONET_USERNAME');
+  if (!SYONET_PASSWORD) missing.push('SYONET_PASSWORD');
+
+  console.error(`❌ CRÍTICO: Variáveis de ambiente obrigatórias não definidas: ${missing.join(', ')}`);
+  console.error('   Configure estas variáveis no ambiente de produção antes de iniciar a aplicação.');
+
+  // Em desenvolvimento, lançamos erro. Em produção, o processo nem inicia.
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error(`Falta configuração: ${missing.join(', ')}`);
+  }
+}
+
+// Configuração do Syonet - SEM FALLBACKS com credenciais reais
 const SYONET_CONFIG: SyonetRealConfig = {
-  baseUrl: process.env.SYONET_URL || 'https://viasul.syonet.com',
-  username: process.env.SYONET_USERNAME || 'camila.brito',
-  password: process.env.SYONET_PASSWORD || 'C@mila1234',
+  baseUrl: SYONET_URL!,
+  username: SYONET_USERNAME!,
+  password: SYONET_PASSWORD!,
   headless: process.env.SYONET_HEADLESS !== 'false',
   timeout: 120000,
 };
+
+console.log('🔐 Configuração do Syonet carregada (variáveis de ambiente)');
 
 const ValidationItemSchema = z.object({
   itemType: z.enum(['LEAD', 'SALE', 'APPOINTMENT', 'STORE', 'VL_CONSULTANT', 'MEDIA', 'OVERALL']),

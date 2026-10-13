@@ -8,6 +8,7 @@ import jwt from '@fastify/jwt';
 import multipart from '@fastify/multipart';
 import rateLimit from '@fastify/rate-limit';
 import { prismaPlugin } from './plugins/prisma.plugin';
+import sentryPlugin from './plugins/sentry.plugin';
 import { authRoutes } from './routes/auth.routes';
 import { storeRoutes } from './routes/store.routes';
 import { userRoutes } from './routes/user.routes';
@@ -22,6 +23,7 @@ import { appointmentRoutes } from './routes/appointment.routes';
 import { analyticsRoutes } from './routes/analytics.routes';
 import { dashboardAuthRoutes } from './routes/dashboard-auth.routes';
 import { validationRoutes } from './routes/validation.routes';
+import { cronRoutes } from './routes/cron.routes';
 import type { FastifyRequest, FastifyReply } from 'fastify';
 import { UserRole } from '@prisma/client';
 
@@ -137,8 +139,28 @@ export async function buildApp() {
     credentials: true,
   });
 
+  // ── Validação de variáveis de ambiente críticas ──────────────
+  const requiredEnvVars = ['JWT_SECRET', 'DATABASE_URL'];
+  const missingVars = requiredEnvVars.filter(v => !process.env[v]);
+
+  if (missingVars.length > 0) {
+    console.error(`❌ CRÍTICO: Variáveis de ambiente obrigatórias não definidas: ${missingVars.join(', ')}`);
+    console.error('   Configure estas variáveis no ambiente de produção antes de iniciar a aplicação.');
+
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error(`Falta configuração: ${missingVars.join(', ')}`);
+    }
+
+    console.warn('⚠️  Modo desenvolvimento: usando valores padrão para variáveis ausentes');
+  }
+
+  // Validação específica do JWT_SECRET
+  if (!process.env.JWT_SECRET) {
+    throw new Error('JWT_SECRET environment variable is required');
+  }
+
   await fastify.register(jwt, {
-    secret: process.env.JWT_SECRET!,
+    secret: process.env.JWT_SECRET,
     sign: { expiresIn: process.env.JWT_EXPIRES_IN ?? '7d' },
   });
 
@@ -152,9 +174,13 @@ export async function buildApp() {
   });
 
   await fastify.register(prismaPlugin);
+  await fastify.register(sentryPlugin);
 
   // ── Health check ─────────────────────────────────────────
   fastify.get('/health', async () => ({ status: 'ok', timestamp: new Date().toISOString() }));
+
+  // ── Cron Jobs (sem autenticação - verificado pela Vercel) ──
+  await fastify.register(cronRoutes, { prefix: '/api/cron' });
 
   // Decorar para uso nos route files — ANTES de registrar rotas que usam auth
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

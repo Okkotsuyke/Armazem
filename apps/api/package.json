@@ -14,12 +14,13 @@
     "test": "npx tsx prisma/test.ts"
   },
   "dependencies": {
+    "@crm/shared": "./src/shared",
     "@fastify/cors": "^9.0.0",
     "@fastify/jwt": "^8.0.0",
     "@fastify/multipart": "^8.0.0",
     "@fastify/rate-limit": "^9.0.0",
     "@prisma/client": "^5.22.0",
-    "@crm/shared": "./src/shared",
+    "@sentry/node": "^11.7.0",
     "bcryptjs": "^2.4.3",
     "csv-parse": "^5.6.0",
     "fastify": "^4.28.0",
@@ -27,14 +28,15 @@
     "pino": "^9.5.0",
     "pino-pretty": "^11.2.0",
     "playwright": "^1.64.0",
-    "typescript": "^5.7.0",
-    "tsx": "^4.19.0",
     "prisma": "^5.22.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0",
     "zod": "^3.24.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^22.0.0",
-    "@types/pg": "^8.23.1"
+    "@types/pg": "^8.23.1",
+    "@vercel/node": "^23.0.1"
   }
 }

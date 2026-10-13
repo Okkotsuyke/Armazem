@@ -12,8 +12,20 @@ declare module 'fastify' {
 }
 
 async function prismaPluginInner(fastify: FastifyInstance) {
+  // Configurar URL do banco - usar E3_POSTGRES_URL se DATABASE_URL não estiver disponível
+  const databaseUrl = process.env.DATABASE_URL || process.env.E3_POSTGRES_URL;
+
+  if (!databaseUrl) {
+    throw new Error('DATABASE_URL or E3_POSTGRES_URL environment variable is required');
+  }
+
   const prisma = new PrismaClient({
     log: process.env.NODE_ENV !== 'production' ? ['error', 'warn'] : ['error'],
+    datasources: {
+      db: {
+        url: databaseUrl,
+      },
+    },
   });
 
   await prisma.$connect();
