@@ -140,7 +140,13 @@ export async function buildApp() {
   });
 
   // ── Validação de variáveis de ambiente críticas ──────────────
-  const requiredEnvVars = ['JWT_SECRET', 'DATABASE_URL', 'SYONET_USERNAME', 'SYONET_PASSWORD'];
+  // JWT_SECRET e DATABASE_URL são sempre obrigatórios.
+  // SYONET_USERNAME/SYONET_PASSWORD só são obrigatórios quando SYONET_USE_REAL=true.
+  const alwaysRequired = ['JWT_SECRET', 'DATABASE_URL'];
+  const syonetRequired = process.env.SYONET_USE_REAL === 'true'
+    ? ['SYONET_USERNAME', 'SYONET_PASSWORD']
+    : [];
+  const requiredEnvVars = [...alwaysRequired, ...syonetRequired];
   const missingVars = requiredEnvVars.filter(v => !process.env[v]);
 
   if (missingVars.length > 0) {
@@ -177,6 +183,46 @@ export async function buildApp() {
   await fastify.register(prismaPlugin);
   await fastify.register(sentryPlugin);
 
+  // ── Error handler global ──────────────────────────────────────
+  fastify.setErrorHandler((error, request, reply) => {
+    request.log.error(error);
+
+    // Erros de validação do Fastify (400)
+    if (error.validation) {
+      return reply.status(400).send({
+        statusCode: 400,
+        message: 'Validation Error',
+        error: error.message,
+      });
+    }
+
+    // ZodError — thrown by .parse() calls in route handlers (400)
+    if (error.name === 'ZodError' || error.constructor.name === 'ZodError') {
+      return reply.status(400).send({
+        statusCode: 400,
+        message: 'Validation Error',
+        error: error.message,
+      });
+    }
+
+    // Erros de rate limit (429)
+    if (error.statusCode === 429) {
+      return reply.status(429).send({
+        statusCode: 429,
+        message: 'Too Many Requests',
+        error: 'Rate limit exceeded',
+      });
+    }
+
+    // Erros genéricos
+    const statusCode = error.statusCode ?? 500;
+    return reply.status(statusCode).send({
+      statusCode,
+      message: error.message ?? 'Internal Server Error',
+      error: error.name,
+    });
+  });
+
   // ── Health check com verificação de DB ─────────────────────────────────────
   fastify.get('/health', async (request, reply) => {
     let dbStatus = 'disconnected';
@@ -184,6 +230,7 @@ export async function buildApp() {
 
     try {
       const start = Date.now();
+      if (!fastify.prisma) throw new Error('Prisma not initialized');
       await fastify.prisma.$queryRaw`SELECT 1`;
       dbLatency = Date.now() - start;
       dbStatus = 'connected';
