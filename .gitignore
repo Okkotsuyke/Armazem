@@ -58,3 +58,6 @@ playwright/.cache/
 
 # Ignore Supabase config in repo (manter apenas .env.example)
 apps/api/supabase/
+
+.vercel
+.env*

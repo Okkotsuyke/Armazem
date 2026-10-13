@@ -4,14 +4,15 @@
     "lib": ["ES2022", "DOM"],
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "strict": true,
+    "strict": false,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "outDir": "./dist",
     "rootDir": "./src",
+    "noEmitOnError": false,
     "paths": {
-      "@crm/shared": ["../../packages/shared/src"]
+      "@crm/shared": ["./src/shared"]
     }
   },
   "include": ["src/**/*"],

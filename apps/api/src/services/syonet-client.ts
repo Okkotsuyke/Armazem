@@ -40,6 +40,9 @@ export interface LeadData {
   assignedBdcId?: string;
   department?: string;
   tipoVenda?: string;
+  vehicleModel?: string;
+  vehicleYear?: string;
+  vehicleBrand?: string;
 }
 
 export interface AppointmentData {
