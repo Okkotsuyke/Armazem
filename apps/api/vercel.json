@@ -3,7 +3,7 @@
   "buildCommand": "pnpm turbo build --filter=@crm/api",
   "installCommand": "pnpm install",
   "framework": null,
-  "outputDirectory": "dist",
+  "outputDirectory": "apps/api/dist",
   "functions": {
     "api/index.ts": { "runtime": "nodejs24.x", "maxDuration": 300 }
   },
