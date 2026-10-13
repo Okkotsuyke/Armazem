@@ -1,86 +1,54 @@
-/**
- * Vercel Serverless Function
- * Handler para todas as rotas da API
- */
-const { buildApp } = require('../dist/app');
+// Vercel Serverless Handler - Fastify via inject()
+// Build output: tsc compila para dist/api/index.js (serverless entrypoint)
+import { buildApp } from '../src/app.js';
 
-// Cache da instância do Fastify
 let fastifyInstance = null;
+let initPromise = null;
 
-/**
- * Inicializa e cacheia a instância do Fastify
- */
 async function getFastify() {
-  if (!fastifyInstance) {
-    fastifyInstance = await buildApp();
-    await fastifyInstance.ready();
+  if (fastifyInstance) return fastifyInstance;
+  if (!initPromise) {
+    initPromise = buildApp()
+      .then((app) => {
+        fastifyInstance = app;
+        return app;
+      })
+      .catch((err) => {
+        initPromise = null;
+        throw err;
+      });
   }
-  return fastifyInstance;
+  return initPromise;
 }
 
-/**
- * Handler principal da serverless function
- */
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
   try {
     const fastify = await getFastify();
-
-    // Converter a requisição Vercel para formato Fastify
-    // O Fastify usa um formato diferente de request/response
-    const { parse } = require('url');
-    const url = parse(req.url, true);
-
-    // Criar resposta mock
-    let responseBody = '';
-    let responseStatus = 200;
-    let responseHeaders = {};
-
-    // Mock do response para capturar a saída
-    const mockRes = {
-      status: (code) => {
-        responseStatus = code;
-        return mockRes;
-      },
-      send: (body) => {
-        responseBody = typeof body === 'object' ? JSON.stringify(body) : String(body);
-        return mockRes;
-      },
-      json: (body) => {
-        responseBody = JSON.stringify(body);
-        return mockRes;
-      },
-      setHeader: (key, value) => {
-        responseHeaders[key] = value;
-        return mockRes;
-      },
-      end: () => {
-        // Response completa
-        res.statusCode = responseStatus;
-        Object.entries(responseHeaders).forEach(([key, value]) => {
-          res.setHeader(key, value);
-        });
-        res.end(responseBody);
-      }
-    };
-
-    // Criar request no formato Fastify
-    const request = Object.assign(req, {
-      url: url.pathname + url.search,
-      params: {},
-      query: url.query || {},
-      body: req.body || {},
-      ip: req.headers['x-forwarded-for'] || req.connection?.remoteAddress || '127.0.0.1',
-      hostname: req.headers.host,
+    const response = await fastify.inject({
+      method: req.method,
+      url: req.url ?? '/',
+      headers: req.headers,
+      payload: req.body,
+      query: req.query,
     });
 
-    // Processar com Fastify
-    await fastify.handle(request, mockRes);
-
-    return { req, res };
+    res.status(response.statusCode);
+    if (response.headers) {
+      for (const [key, value] of Object.entries(response.headers)) {
+        if (value !== undefined && value !== null) {
+          res.setHeader(key, String(value));
+        }
+      }
+    }
+    const body = response.body ?? '';
+    res.send(typeof body === 'string' ? body : Buffer.from(body));
   } catch (error) {
-    console.error('Error handling request:', error);
-    res.statusCode = 500;
-    res.end(JSON.stringify({ error: 'Internal Server Error' }));
-    return { req, res };
+    console.error('[vercel-handler] Error handling request:', error);
+    if (!res.headersSent) {
+      res.status(500).json({
+        error: 'Internal Server Error',
+        message: error?.message ?? 'Unknown error',
+      });
+    }
   }
-};
+}

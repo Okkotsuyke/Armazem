@@ -140,7 +140,7 @@ export async function buildApp() {
   });
 
   // ── Validação de variáveis de ambiente críticas ──────────────
-  const requiredEnvVars = ['JWT_SECRET', 'DATABASE_URL'];
+  const requiredEnvVars = ['JWT_SECRET', 'DATABASE_URL', 'SYONET_USERNAME', 'SYONET_PASSWORD'];
   const missingVars = requiredEnvVars.filter(v => !process.env[v]);
 
   if (missingVars.length > 0) {
@@ -168,16 +168,40 @@ export async function buildApp() {
     limits: { fileSize: 10 * 1024 * 1024 },
   });
 
+  // ── Rate limiting global ─────────────────────────────────────
   await fastify.register(rateLimit, {
-    max: 100,
+    max: 500,  // 500 req/min para operações normais
     timeWindow: '1 minute',
   });
 
   await fastify.register(prismaPlugin);
   await fastify.register(sentryPlugin);
 
-  // ── Health check ─────────────────────────────────────────
-  fastify.get('/health', async () => ({ status: 'ok', timestamp: new Date().toISOString() }));
+  // ── Health check com verificação de DB ─────────────────────────────────────
+  fastify.get('/health', async (request, reply) => {
+    let dbStatus = 'disconnected';
+    let dbLatency = null;
+
+    try {
+      const start = Date.now();
+      await fastify.prisma.$queryRaw`SELECT 1`;
+      dbLatency = Date.now() - start;
+      dbStatus = 'connected';
+    } catch (error) {
+      request.log.error({ error }, 'Health check: DB connection failed');
+    }
+
+    return {
+      status: dbStatus === 'connected' ? 'ok' : 'degraded',
+      timestamp: new Date().toISOString(),
+      version: process.env.npm_package_version ?? '0.1.0',
+      environment: process.env.NODE_ENV ?? 'development',
+      integrations: {
+        database: dbStatus,
+        dbLatency: dbLatency,
+      },
+    };
+  });
 
   // ── Cron Jobs (sem autenticação - verificado pela Vercel) ──
   await fastify.register(cronRoutes, { prefix: '/api/cron' });

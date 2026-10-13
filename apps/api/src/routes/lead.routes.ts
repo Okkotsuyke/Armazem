@@ -9,6 +9,34 @@ import { z } from 'zod';
 import { authenticate } from '../middleware/auth.middleware';
 import { attachAssignees } from '../services/lead-assignees';
 
+// ── Zod Schemas para validação de input ────────────────────────────────
+const querySchema = z.object({
+  storeId: z.string().optional(),
+  status: z.string().optional(),
+  vlUserId: z.string().optional(),
+  startDate: z.string().datetime().optional(),
+  endDate: z.string().datetime().optional(),
+  limit: z.string().regex(/^\d+$/).optional(),
+  offset: z.string().regex(/^\d+$/).optional(),
+});
+
+const idParamSchema = z.object({
+  id: z.string().uuid('ID inválido'),
+});
+
+const updateLeadBodySchema = z.object({
+  statusNormalized: z.string().optional(),
+  priorityFlag: z.boolean().optional(),
+  assignedVlId: z.string().uuid().optional().nullable(),
+  assignedVsId: z.string().uuid().optional().nullable(),
+  assignedBdcId: z.string().uuid().optional().nullable(),
+});
+
+const createEventBodySchema = z.object({
+  eventType: z.string().min(1).max(50),
+  description: z.string().max(500).optional(),
+});
+
 export async function leadRoutes(fastify: FastifyInstance) {
   fastify.addHook('onRequest', authenticate);
 
@@ -18,15 +46,7 @@ export async function leadRoutes(fastify: FastifyInstance) {
    */
   fastify.get('/', async (request, reply) => {
     try {
-      const query = request.query as {
-        storeId?: string;
-        status?: string;
-        vlUserId?: string;
-        startDate?: string;
-        endDate?: string;
-        limit?: string;
-        offset?: string;
-      };
+      const query = querySchema.parse(request.query);
 
       const where: any = {};
 
@@ -82,7 +102,7 @@ export async function leadRoutes(fastify: FastifyInstance) {
    */
   fastify.get('/:id', async (request, reply) => {
     try {
-      const { id } = request.params as { id: string };
+      const { id } = idParamSchema.parse(request.params);
 
       const lead = await fastify.prisma.lead.findUnique({
         where: { id },
@@ -131,14 +151,8 @@ export async function leadRoutes(fastify: FastifyInstance) {
   fastify.put('/:id',
     async (request, reply) => {
       try {
-        const { id } = request.params as { id: string };
-        const body = request.body as {
-          statusNormalized?: string;
-          priorityFlag?: boolean;
-          assignedVlId?: string;
-          assignedVsId?: string;
-          assignedBdcId?: string;
-        };
+        const { id } = idParamSchema.parse(request.params);
+        const body = updateLeadBodySchema.parse(request.body);
 
         // Campos que podem ser atualizados
         const updateData: any = {};
@@ -194,11 +208,8 @@ export async function leadRoutes(fastify: FastifyInstance) {
   fastify.post('/:id/events',
     async (request, reply) => {
       try {
-        const { id } = request.params as { id: string };
-        const body = request.body as {
-          eventType: string;
-          description?: string;
-        };
+        const { id } = idParamSchema.parse(request.params);
+        const body = createEventBodySchema.parse(request.body);
 
         const event = await fastify.prisma.leadEvent.create({
           data: {

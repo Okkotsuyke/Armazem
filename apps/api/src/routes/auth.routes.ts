@@ -12,7 +12,15 @@ const LoginSchema = z.object({
 
 export const authRoutes: FastifyPluginAsync = async (fastify) => {
   // POST /api/v1/auth/login
-  fastify.post('/login', async (request, reply) => {
+  // Rate limit específico: 5 tentativas por minuto (proteção brute force)
+  fastify.post('/login', {
+    config: {
+      rateLimit: {
+        max: 5,
+        timeWindow: '1 minute',
+      },
+    },
+  }, async (request, reply) => {
     const body = LoginSchema.parse(request.body);
 
     const user = await fastify.prisma.user.findFirst({
